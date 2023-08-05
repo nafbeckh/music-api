@@ -1,7 +1,7 @@
 class GetSongModel {
-  constructor ({ id, title, year, performer, genre, duration, albumId }) {
+  constructor ({ id, title, year, genre, performer, duration, album_id: albumId }) {
     this.id = id
-    this.name = title
+    this.title = title
     this.year = year
     this.performer = performer
     this.genre = genre
@@ -9,7 +9,7 @@ class GetSongModel {
     this.albumId = albumId
   }
 
-  getAllModel () {
+  getModel () {
     return {
       id: this.id,
       title: this.title,

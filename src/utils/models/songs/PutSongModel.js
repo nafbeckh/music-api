@@ -6,12 +6,13 @@ class PutSongModel {
     this.genre = genre
     this.duration = duration
     this.albumId = albumId
+    this.updateAt = new Date().toISOString()
     this.id = id
   }
 
-  getInsertModel () {
-    return [this.title, this.year, this.genre,
-      this.performer, this.duration, this.albumId, this.id]
+  getUpdateModel () {
+    return [this.title, this.year, this.performer,
+      this.genre, this.duration, this.albumId, this.updateAt, this.id]
   }
 }
 
