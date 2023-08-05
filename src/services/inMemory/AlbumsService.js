@@ -1,22 +1,17 @@
 const { Pool } = require('pg')
-const { nanoid } = require('nanoid')
 const InvariantError = require('../../exceptions/InvariantError')
 const NotFoundError = require('../../exceptions/NotFoundError')
-const { albumMapDBToModel } = require('../../utils')
+const { PostAlbumModel, GetAlbumModel, PutAlbumModel } = require('../../utils/models/albums')
 
 class AlbumsService {
   constructor () {
     this._pool = new Pool()
   }
 
-  async addAlbum ({ name, year }) {
-    const id = `album-${nanoid(16)}`
-    const createdAt = new Date().toISOString()
-    const updatedAt = createdAt
-
+  async addAlbum (payload) {
     const query = {
       text: 'INSERT INTO albums VALUES($1, $2, $3, $4, $5) RETURNING id',
-      values: [id, name, year, createdAt, updatedAt]
+      values: new PostAlbumModel(payload).getInsertModel()
     }
 
     const result = await this._pool.query(query)
@@ -26,11 +21,6 @@ class AlbumsService {
     }
 
     return result.rows[0].id
-  }
-
-  async getAlbums () {
-    const result = await this._pool.query('SELECT * FROM albums')
-    return result.rows.map(albumMapDBToModel)
   }
 
   async getAlbumById (id) {
@@ -45,15 +35,13 @@ class AlbumsService {
       throw new NotFoundError('Album tidak ditemukan')
     }
 
-    return result.rows.map(albumMapDBToModel)[0]
+    return new GetAlbumModel(result.rows[0]).getModel()
   }
 
-  async editAlbumById (id, { name, year }) {
-    const updatedAt = new Date().toISOString()
-
+  async editAlbumById (id, payload) {
     const query = {
       text: 'UPDATE albums SET name = $1, year = $2, updated_at = $3 WHERE id = $4 RETURNING id',
-      values: [name, year, updatedAt, id]
+      values: new PutAlbumModel(id, payload).getUpdateModel()
     }
 
     const result = await this._pool.query(query)

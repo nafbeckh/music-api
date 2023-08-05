@@ -11,29 +11,16 @@ class AlbumsHandler {
   async postAlbumHandler (req, h) {
     this._validator.validateAlbumPayload(req.payload)
 
-    const { name = 'unnamed', year } = req.payload
-    const albumId = await this._service.addAlbum({ name, year })
+    const albumId = await this._service.addAlbum(req.payload)
 
     const response = h.response({
       status: 'success',
       message: 'Album berhasil ditambahkan',
-      data: {
-        albumId
-      }
+      data: { albumId }
     })
 
     response.code(201)
     return response
-  }
-
-  async getAlbumsHandler () {
-    const albums = await this._service.getAlbums()
-    return {
-      status: 'success',
-      data: {
-        albums
-      }
-    }
   }
 
   async getAlbumByIdHandler (req, h) {
@@ -41,9 +28,7 @@ class AlbumsHandler {
     const album = await this._service.getAlbumById(id)
     return {
       status: 'success',
-      data: {
-        album
-      }
+      data: { album }
     }
   }
 
