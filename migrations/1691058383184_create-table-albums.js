@@ -37,6 +37,10 @@ exports.up = pgm => {
       type: 'varchar(35)',
       notNull: true
     },
+    year: {
+      type: 'integer',
+      notNull: true
+    },
     performer: {
       type: 'varchar(30)',
       notNull: true
@@ -48,11 +52,8 @@ exports.up = pgm => {
     duration: {
       type: 'integer'
     },
-    albumId: {
-      type: 'VARCHAR(22)',
-      notNull: true,
-      references: '"albums"',
-      onDelete: 'cascade'
+    album_id: {
+      type: 'varchar(22)'
     },
     created_at: {
       type: 'timestamp',
@@ -65,7 +66,6 @@ exports.up = pgm => {
       default: pgm.func('current_timestamp')
     }
   })
-  pgm.createIndex('songs', 'albumId')
 }
 
 exports.down = pgm => {
@@ -77,8 +77,7 @@ exports.down = pgm => {
 
   pgm.dropTable('albums', {
     options: {
-      ifExists: true,
-      cascade: true
+      ifExists: true
     }
   })
 }
