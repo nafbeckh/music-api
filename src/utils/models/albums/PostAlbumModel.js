@@ -5,10 +5,12 @@ class PostAlbumModel {
     this.id = `album-${nanoid(16)}`
     this.name = name
     this.year = year
+    this.createdAt = new Date().toISOString()
+    this.updatedAt = this.createdAt
   }
 
   getInsertModel () {
-    return [this.id, this.name, this.year]
+    return [this.id, this.name, this.year, this.createdAt, this.updatedAt]
   }
 }
 
