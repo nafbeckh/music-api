@@ -16,12 +16,12 @@ exports.up = pgm => {
       type: 'integer',
       notNull: true
     },
-    createdAt: {
+    created_at: {
       type: 'timestamp',
       notNull: true,
       default: pgm.func('current_timestamp')
     },
-    updateAt: {
+    updated_at: {
       type: 'timestamp',
       notNull: true,
       default: pgm.func('current_timestamp')
@@ -54,12 +54,12 @@ exports.up = pgm => {
       references: '"albums"',
       onDelete: 'cascade'
     },
-    createdAt: {
+    created_at: {
       type: 'timestamp',
       notNull: true,
       default: pgm.func('current_timestamp')
     },
-    updateAt: {
+    updated_at: {
       type: 'timestamp',
       notNull: true,
       default: pgm.func('current_timestamp')
@@ -69,6 +69,16 @@ exports.up = pgm => {
 }
 
 exports.down = pgm => {
-  pgm.dropTable('albums').ifExists(true).cascade(true)
-  pgm.dropTable('songs').ifExists(true)
+  pgm.dropTable('songs', {
+    options: {
+      ifExists: true
+    }
+  })
+
+  pgm.dropTable('albums', {
+    options: {
+      ifExists: true,
+      cascade: true
+    }
+  })
 }
