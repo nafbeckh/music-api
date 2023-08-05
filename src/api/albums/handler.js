@@ -12,7 +12,7 @@ class AlbumsHandler {
     this._validator.validateAlbumPayload(req.payload)
 
     const { name = 'unnamed', year } = req.payload
-    const albumId = this._service.addAlbum({ name, year })
+    const albumId = await this._service.addAlbum({ name, year })
 
     const response = h.response({
       status: 'success',
@@ -27,7 +27,7 @@ class AlbumsHandler {
   }
 
   async getAlbumsHandler () {
-    const albums = this._service.getAlbums()
+    const albums = await this._service.getAlbums()
     return {
       status: 'success',
       data: {
@@ -38,7 +38,7 @@ class AlbumsHandler {
 
   async getAlbumByIdHandler (req, h) {
     const { id } = req.params
-    const album = this._service.getAlbumById(id)
+    const album = await this._service.getAlbumById(id)
     return {
       status: 'success',
       data: {
@@ -51,7 +51,7 @@ class AlbumsHandler {
     this._validator.validateAlbumPayload(req.payload)
 
     const { id } = req.params
-    this._service.editAlbumById(id, req.payload)
+    await this._service.editAlbumById(id, req.payload)
     return {
       status: 'success',
       message: 'Album berhasil diperbarui'
@@ -60,7 +60,7 @@ class AlbumsHandler {
 
   async deleteAlbumByIdHandler (req, h) {
     const { id } = req.params
-    this._service.deleteAlbumById(id)
+    await this._service.deleteAlbumById(id)
     return {
       status: 'success',
       message: 'Album berhasil dihapus'

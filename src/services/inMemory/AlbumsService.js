@@ -1,71 +1,79 @@
+const { Pool } = require('pg')
 const { nanoid } = require('nanoid')
 const InvariantError = require('../../exceptions/InvariantError')
 const NotFoundError = require('../../exceptions/NotFoundError')
+const { mapDBToModel } = require('../../utils/albums')
 
 class AlbumsService {
   constructor () {
-    this._albums = []
+    this._pool = new Pool()
   }
 
-  addAlbum ({ name, year }) {
+  async addAlbum ({ name, year }) {
     const id = `album-${nanoid(16)}`
     const createdAt = new Date().toISOString()
     const updatedAt = createdAt
 
-    const newAlbum = {
-      id, name, year, createdAt, updatedAt
+    const query = {
+      text: 'INSERT INTO albums VALUES($1, $2, $3, $4, $5) RETURNING id',
+      values: [id, name, year, createdAt, updatedAt]
     }
 
-    this._albums.push(newAlbum)
+    const result = await this._pool.query(query)
 
-    const isSuccess = this._albums.filter((Album) => Album.id === id).length > 0
-
-    if (!isSuccess) {
+    if (!result.rows[0].id) {
       throw new InvariantError('Album gagal ditambahkan')
     }
 
-    return id
+    return result.rows[0].id
   }
 
-  getAlbums () {
-    return this._albums
+  async getAlbums () {
+    const result = await this._pool.query('SELECT * FROM albums')
+    return result.rows.map(mapDBToModel)
   }
 
-  getAlbumById (id) {
-    const album = this._albums.filter((n) => n.id === id)[0]
+  async getAlbumById (id) {
+    const query = {
+      text: 'SELECT * FROM albums WHERE id = $1',
+      values: [id]
+    }
 
-    if (!album) {
+    const result = await this._pool.query(query)
+
+    if (!result.rows.length) {
       throw new NotFoundError('Album tidak ditemukan')
     }
 
-    return album
+    return result.rows.map(mapDBToModel)[0]
   }
 
-  editAlbumById (id, { name, year }) {
-    const index = this._albums.findIndex((album) => album.id === id)
-
-    if (index === -1) {
-      throw new NotFoundError('Gagal memperbarui album. Id tidak ditemukan')
-    }
-
+  async editAlbumById (id, { name, year }) {
     const updatedAt = new Date().toISOString()
 
-    this._albums[index] = {
-      ...this._albums[index],
-      name,
-      year,
-      updatedAt
+    const query = {
+      text: 'UPDATE albums SET name = $1, year = $2, updated_at = $3 WHERE id = $4 RETURNING id',
+      values: [name, year, updatedAt, id]
+    }
+
+    const result = await this._pool.query(query)
+
+    if (!result.rows.length) {
+      throw new NotFoundError('Gagal memperbarui album. Id tidak ditemukan')
     }
   }
 
-  deleteAlbumById (id) {
-    const index = this._albums.findIndex((album) => album.id === id)
-
-    if (index === -1) {
-      throw new NotFoundError('Album gagal dihapus. Id tidak ditemukan')
+  async deleteAlbumById (id) {
+    const query = {
+      text: 'DELETE FROM albums WHERE id = $1 RETURNING id',
+      values: [id]
     }
 
-    this._albums.splice(index, 1)
+    const result = await this._pool.query(query)
+
+    if (!result.rows.length) {
+      throw new NotFoundError('Album gagal dihapus. Id tidak ditemukan')
+    }
   }
 }
 
