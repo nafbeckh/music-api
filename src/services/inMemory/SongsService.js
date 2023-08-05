@@ -48,6 +48,17 @@ class SongsService {
     return new GetSongModel(result.rows[0]).getModel()
   }
 
+  async getSongByAlbumId (id) {
+    const query = {
+      text: 'SELECT id, title, performer FROM songs WHERE album_id = $1',
+      values: [id]
+    }
+
+    const result = await this._pool.query(query)
+
+    return new GetAllSongsModel(result).getAllModel()
+  }
+
   async editSongById (id, payload) {
     const query = {
       text: 'UPDATE songs SET title = $1, year = $2, performer = $3, genre = $4, duration = $5, album_id = $6, updated_at = $7 WHERE id = $8 RETURNING id',
