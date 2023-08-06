@@ -3,7 +3,7 @@
 exports.shorthands = undefined
 
 exports.up = pgm => {
-  pgm.createTable('collaboration', {
+  pgm.createTable('collaborations', {
     id: {
       type: 'varchar(25)',
       primaryKey: true
@@ -15,19 +15,19 @@ exports.up = pgm => {
       onDelete: 'cascade'
     },
     user_id: {
-      type: 'varchar(20)',
+      type: 'varchar(25)',
       notNull: true,
       references: '"users"',
       onDelete: 'cascade'
     }
   })
 
-  pgm.createIndex('collaboration', 'playlist_id')
-  pgm.createIndex('collaboration', 'user_id')
+  pgm.createIndex('collaborations', 'playlist_id')
+  pgm.createIndex('collaborations', 'user_id')
 }
 
 exports.down = pgm => {
-  pgm.dropTable('collaboration', {
+  pgm.dropTable('collaborations', {
     options: {
       ifExists: true
     }

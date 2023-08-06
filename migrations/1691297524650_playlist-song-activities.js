@@ -19,7 +19,7 @@ exports.up = pgm => {
       notNull: true
     },
     user_id: {
-      type: 'varchar(20)',
+      type: 'varchar(25)',
       notNull: true
     },
     time: {

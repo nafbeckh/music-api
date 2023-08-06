@@ -22,8 +22,8 @@ exports.up = pgm => {
     }
   })
 
-  pgm.createIndex('collaboration', 'playlist_id')
-  pgm.createIndex('collaboration', 'song_id')
+  pgm.createIndex('playlist_songs', 'playlist_id')
+  pgm.createIndex('playlist_songs', 'song_id')
 }
 
 exports.down = pgm => {
