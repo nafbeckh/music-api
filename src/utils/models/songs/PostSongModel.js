@@ -9,13 +9,11 @@ class PostSongModel {
     this.genre = genre
     this.duration = duration
     this.albumId = albumId
-    this.createdAt = new Date().toISOString()
-    this.updatedAt = this.createdAt
   }
 
   getInsertModel () {
     return [this.id, this.title, this.year, this.performer,
-      this.genre, this.duration, this.albumId, this.createdAt, this.createdAt]
+      this.genre, this.duration, this.albumId]
   }
 }
 

@@ -10,7 +10,7 @@ class AlbumsService {
 
   async addAlbum (payload) {
     const query = {
-      text: 'INSERT INTO albums VALUES($1, $2, $3, $4, $5) RETURNING id',
+      text: 'INSERT INTO albums VALUES($1, $2, $3) RETURNING id',
       values: new PostAlbumModel(payload).getInsertModel()
     }
 
