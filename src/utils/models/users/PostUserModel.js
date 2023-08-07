@@ -1,11 +1,11 @@
 const { nanoid } = require('nanoid')
 
 class PostUserModel {
-  constructor ({ username, password, fullname }) {
+  constructor (data, hashedPassword) {
     this.id = `user-${nanoid(16)}`
-    this.username = username
-    this.password = password
-    this.fullname = fullname
+    this.username = data.username
+    this.password = hashedPassword
+    this.fullname = data.fullname
   }
 
   getInsertModel () {
