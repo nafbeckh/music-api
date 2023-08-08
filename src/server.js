@@ -18,10 +18,17 @@ const users = require('./api/users')
 const UsersService = require('./services/inMemory/UsersService')
 const UsersValidator = require('./validator/users')
 
+/* Authentications */
+const authentications = require('./api/authentications')
+const AuthenticationsService = require('./services/inMemory/AuthenticationsService')
+const TokenManager = require('./tokenize/TokenManager')
+const AuthenticationsValidator = require('./validator/authentications')
+
 const init = async () => {
   const albumsService = new AlbumsService()
   const songsService = new SongsService()
   const usersService = new UsersService()
+  const authenticationsService = new AuthenticationsService()
 
   const server = Hapi.server({
     port: process.env.PORT,
@@ -33,30 +40,39 @@ const init = async () => {
     }
   })
 
-  await server.register({
-    plugin: albums,
-    options: {
-      AlbumsService: albumsService,
-      SongsService: songsService,
-      validator: AlbumsValidator
+  await server.register([
+    {
+      plugin: albums,
+      options: {
+        albumsService,
+        songsService,
+        validator: AlbumsValidator
+      }
+    },
+    {
+      plugin: songs,
+      options: {
+        service: songsService,
+        validator: SongsValidator
+      }
+    },
+    {
+      plugin: users,
+      options: {
+        service: usersService,
+        validator: UsersValidator
+      }
+    },
+    {
+      plugin: authentications,
+      options: {
+        authenticationsService,
+        usersService,
+        tokenManager: TokenManager,
+        validator: AuthenticationsValidator
+      }
     }
-  })
-
-  await server.register({
-    plugin: songs,
-    options: {
-      service: songsService,
-      validator: SongsValidator
-    }
-  })
-
-  await server.register({
-    plugin: users,
-    options: {
-      service: usersService,
-      validator: UsersValidator
-    }
-  })
+  ])
 
   server.ext('onPreResponse', (req, h) => {
     const { response } = req
