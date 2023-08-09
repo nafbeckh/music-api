@@ -41,6 +41,28 @@ class PlaylistsService {
     return result.rows
   }
 
+  async getPlaylistById (id, userId) {
+    await this.verifyPlaylistIsExist(id, userId)
+    await this.verifyPlaylistAccess(id, userId)
+
+    const query = {
+      text: `SELECT p.id, p.name, u.username
+             FROM playlists AS p
+             INNER JOIN users as u ON p.owner = u.id
+             LEFT JOIN collaborations as c ON c.playlist_id = p.id
+             WHERE (p.owner = $1 OR c.user_id = $1) AND p.id = $2`,
+      values: [userId, id]
+    }
+
+    const result = await this._pool.query(query)
+
+    if (!result.rows.length) {
+      throw new NotFoundError('Playlist tidak ditemukan')
+    }
+
+    return result.rows[0]
+  }
+
   async deletePlaylistById ({ id, userId }) {
     await this.verifyPlaylistOwner(id, userId)
 
@@ -66,6 +88,37 @@ class PlaylistsService {
 
     if (result.rows[0].owner !== userId) {
       throw new AuthorizationError('Anda bukan pemilik playlist ini')
+    }
+  }
+
+  async verifyPlaylistAccess (playlistId, userId) {
+    const query = {
+      text: `SELECT playlists.id
+             FROM playlists
+             INNER JOIN users ON playlists.owner = users.id  
+             LEFT JOIN collaborations ON collaborations.playlist_id = playlists.id
+             WHERE (playlists.owner = $1 OR collaborations.user_id = $1) AND 
+             playlists.id = $2`,
+      values: [userId, playlistId]
+    }
+
+    const result = await this._pool.query(query)
+
+    if (!result.rows[0]) {
+      throw new AuthorizationError('Anda bukan pemilik/collaborator playlist ini')
+    }
+  }
+
+  async verifyPlaylistIsExist (playlistId) {
+    const query = {
+      text: 'SELECT * FROM playlists WHERE id = $1',
+      values: [playlistId]
+    }
+
+    const result = await this._pool.query(query)
+
+    if (!result.rows.length) {
+      throw new NotFoundError('Playlist tidak ditemukan')
     }
   }
 }
