@@ -1,6 +1,6 @@
 const { nanoid } = require('nanoid')
 
-class PlaylistModel {
+class PlaylistSongModel {
   constructor ({ id, songId }) {
     this.id = `playlist_song-${nanoid(16)}`
     this.playlistId = id
@@ -16,4 +16,4 @@ class PlaylistModel {
   }
 }
 
-module.exports = PlaylistModel
+module.exports = PlaylistSongModel
