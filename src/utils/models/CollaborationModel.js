@@ -2,7 +2,7 @@ const { nanoid } = require('nanoid')
 
 class CollaborationModel {
   constructor ({ playlistId, userId }) {
-    this.id = `collaborations-${nanoid(10)}`
+    this.id = `collabs-${nanoid(16)}`
     this.playlistId = playlistId
     this.userId = userId
   }
