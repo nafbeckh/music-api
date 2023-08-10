@@ -1,6 +1,7 @@
 const { Pool } = require('pg')
 const bcrypt = require('bcrypt')
 const InvariantError = require('../../exceptions/InvariantError')
+const NotFoundError = require('../../exceptions/NotFoundError')
 const AuthenticationError = require('../../exceptions/AuthenticationError')
 const { PostUserModel } = require('../../utils/models/users')
 
@@ -64,6 +65,19 @@ class UsersService {
     }
 
     return id
+  }
+
+  async verifyUserIsExist (id) {
+    const query = {
+      text: 'SELECT * FROM users WHERE id = $1',
+      values: [id]
+    }
+
+    const result = await this._pool.query(query)
+
+    if (!result.rows.length) {
+      throw new NotFoundError('User tidak ditemukan')
+    }
   }
 }
 
