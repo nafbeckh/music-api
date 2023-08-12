@@ -3,9 +3,10 @@ const InvariantError = require('../../exceptions/InvariantError')
 const PlaylistSongModel = require('../../utils/models/PlaylistSongModel')
 
 class PlaylistSongsService {
-  constructor (playlistsService) {
+  constructor (playlistsService, playlistSongActivitiesService) {
     this._pool = new Pool()
     this._playlistsService = playlistsService
+    this._playlistSongActivitiesService = playlistSongActivitiesService
   }
 
   async addSongToPlaylist (payload) {
@@ -23,6 +24,8 @@ class PlaylistSongsService {
     if (!result.rows.length) {
       throw new InvariantError('Lagu gagal ditambahkan ke playlist')
     }
+
+    await this._playlistSongActivitiesService.addPlaylistActivity(id, songId, userId, 'add')
   }
 
   async getSongsFromPlaylistId (playlistId, userId) {
@@ -59,6 +62,13 @@ class PlaylistSongsService {
     if (!result.rows.length) {
       throw new InvariantError('Lagu gagal dihapus dari playlist. Id tidak ditemukan')
     }
+
+    await this._playlistSongActivitiesService.addPlaylistActivity(
+      playlistId,
+      songId,
+      userId,
+      'delete'
+    )
   }
 }
 
