@@ -1,3 +1,7 @@
+/* eslint-disable camelcase */
+
+exports.shorthands = undefined
+
 exports.up = pgm => {
   pgm.createTable('songs', {
     id: {
@@ -43,9 +47,5 @@ exports.up = pgm => {
 }
 
 exports.down = pgm => {
-  pgm.dropTable('songs', {
-    options: {
-      ifExists: true
-    }
-  })
+  pgm.dropTable('songs')
 }

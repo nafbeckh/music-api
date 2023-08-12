@@ -35,9 +35,5 @@ exports.up = pgm => {
 }
 
 exports.down = pgm => {
-  pgm.dropTable('users', {
-    options: {
-      ifExists: true
-    }
-  })
+  pgm.dropTable('users')
 }

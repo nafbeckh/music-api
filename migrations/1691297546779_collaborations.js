@@ -27,9 +27,5 @@ exports.up = pgm => {
 }
 
 exports.down = pgm => {
-  pgm.dropTable('collaborations', {
-    options: {
-      ifExists: true
-    }
-  })
+  pgm.dropTable('collaborations')
 }
