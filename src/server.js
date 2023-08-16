@@ -1,7 +1,11 @@
 require('dotenv').config()
+
 const Hapi = require('@hapi/hapi')
 const Jwt = require('@hapi/jwt')
+const Inert = require('@hapi/inert')
+const path = require('path')
 
+/* Error */
 const ClientError = require('./exceptions/ClientError')
 
 /* Albums */
@@ -42,6 +46,11 @@ const _exports = require('./api/exports')
 const producerService = require('./services/messageBroker/ProduserServices')
 const ExportsValidator = require('./validator/exports')
 
+/* Uploads */
+const uploads = require('./api/uploads')
+const StorageService = require('./services/storage/StorageService')
+const UploadsValidator = require('./validator/uploads')
+
 const init = async () => {
   const server = Hapi.server({
     port: process.env.PORT,
@@ -62,11 +71,15 @@ const init = async () => {
   const playlistSongActivitiesService = new PlaylistSongActivitiesService()
   const playlistSongsService = new PlaylistSongsService(playlistsService, playlistSongActivitiesService)
   const collaborationsService = new CollaborationsService(usersService)
+  const storageService = new StorageService(path.resolve(__dirname, 'api/uploads/file/covers'))
 
   /* External Plugins */
   await server.register([
     {
       plugin: Jwt
+    },
+    {
+      plugin: Inert
     }
   ])
 
@@ -143,6 +156,14 @@ const init = async () => {
         producerService,
         playlistsService,
         validator: ExportsValidator
+      }
+    },
+    {
+      plugin: uploads,
+      options: {
+        storageService,
+        albumsService,
+        validator: UploadsValidator
       }
     }
   ])
