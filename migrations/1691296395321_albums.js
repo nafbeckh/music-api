@@ -16,6 +16,9 @@ exports.up = pgm => {
       type: 'integer',
       notNull: true
     },
+    cover: {
+      type: 'varchar'
+    },
     created_at: {
       type: 'timestamp',
       notNull: true,
