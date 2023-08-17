@@ -19,6 +19,9 @@ const songs = require('./api/songs')
 const SongsService = require('./services/postgres/SongsService')
 const SongsValidator = require('./validator/songs')
 
+/* Cache */
+const CacheService = require('./services/redis/CacheService')
+
 /* Users */
 const users = require('./api/users')
 const UsersService = require('./services/postgres/UsersService')
@@ -64,8 +67,9 @@ const init = async () => {
   })
 
   /* Server Init */
+  const cacheService = new CacheService()
   const albumsService = new AlbumsService()
-  const albumLikesService = new AlbumLikesService()
+  const albumLikesService = new AlbumLikesService(cacheService)
   const songsService = new SongsService()
   const usersService = new UsersService()
   const authenticationsService = new AuthenticationsService()
