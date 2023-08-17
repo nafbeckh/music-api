@@ -1,7 +1,5 @@
 const redis = require('redis')
 
-const EXPIRE = parseInt(process.env.EXPIRATION_IN_SECONDS, 10)
-
 class CacheService {
   constructor () {
     this._client = redis.createClient({
@@ -17,7 +15,7 @@ class CacheService {
     this._client.connect()
   }
 
-  async set (key, value, expirationInSecond = EXPIRE) {
+  async set (key, value, expirationInSecond = 1800) {
     await this._client.set(key, value, {
       EX: expirationInSecond
     })
