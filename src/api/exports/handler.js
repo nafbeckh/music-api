@@ -24,9 +24,8 @@ class ExportsHandler {
       targetEmail: req.payload.targetEmail
     }
 
-    await this._producerService.sendMessage(process.env.PLAYLIST_CHANNEL_NAME,
-      JSON.stringify(message))
-
+    await this._producerService.sendMessage('export:playlist', JSON.stringify(message))
+      
     const response = h.response({
       status: 'success',
       message: 'Permintaan Anda sedang kami proses'
