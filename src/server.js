@@ -12,6 +12,7 @@ const ClientError = require('./exceptions/ClientError')
 const albums = require('./api/albums')
 const AlbumsService = require('./services/postgres/AlbumsService')
 const AlbumsValidator = require('./validator/albums')
+const AlbumLikesService = require('./services/postgres/AlbumLikesService')
 
 /* Songs */
 const songs = require('./api/songs')
@@ -64,6 +65,7 @@ const init = async () => {
 
   /* Server Init */
   const albumsService = new AlbumsService()
+  const albumLikesService = new AlbumLikesService()
   const songsService = new SongsService()
   const usersService = new UsersService()
   const authenticationsService = new AuthenticationsService()
@@ -106,6 +108,7 @@ const init = async () => {
       options: {
         albumsService,
         songsService,
+        albumLikesService,
         validator: AlbumsValidator
       }
     },

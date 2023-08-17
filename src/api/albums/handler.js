@@ -1,8 +1,9 @@
 const autoBind = require('auto-bind')
 
 class AlbumsHandler {
-  constructor (AlbumsService, SongService, validator) {
+  constructor (AlbumsService, AlbumLikesService, SongService, validator) {
     this._albumsService = AlbumsService
+    this._albumLikesService = AlbumLikesService
     this._songsService = SongService
     this._validator = validator
 
@@ -52,6 +53,46 @@ class AlbumsHandler {
     return {
       status: 'success',
       message: 'Album berhasil dihapus'
+    }
+  }
+
+  async postAlbumLikeHandler (req, h) {
+    const { id: userId } = req.auth.credentials
+    const { id } = req.params
+
+    await this._albumsService.getAlbumById(id)
+    await this._albumLikesService.verifyAlbumLikeIsExist(userId, id)
+    await this._albumLikesService.addAlbumLike(userId, id)
+
+    const response = h.response({
+      status: 'success',
+      message: 'Berhasil menyukai album'
+    })
+
+    response.code(201)
+    return response
+  }
+
+  async getAlbumLikesByIdHandler (req, h) {
+    const { id } = req.params
+
+    const likes = await this._albumLikesService.getAlbumLikesById(id)
+
+    return {
+      status: 'success',
+      data: { likes }
+    }
+  }
+
+  async deleteAlbumLikeHandler (req, h) {
+    const { id: userId } = req.auth.credentials
+    const { id } = req.params
+
+    await this._albumLikesService.deleteAlbumLike(userId, id)
+
+    return {
+      status: 'success',
+      message: 'Batal menyukai album'
     }
   }
 }
